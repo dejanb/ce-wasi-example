@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ce-wasi-example
+  labels:
+    app: ce-wasi-example
+  annotations:
+    alpha.wasi.krustlet.dev/allowed-domains: '["https://postman-echo.com"]'
+    alpha.wasi.krustlet.dev/max-concurrent-requests: "42"
+spec:
+  automountServiceAccountToken: false
+  containers:
+    - image: ghcr.io/dejanb/ce-wasi-example:v1.0.0
+      imagePullPolicy: Always
+      name: ce-wasi-example
+  tolerations:
+    - key: "node.kubernetes.io/network-unavailable"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "wasm32-wasi"
+      effect: "NoExecute"
+    - key: "kubernetes.io/arch"
+      operator: "Equal"
+      value: "wasm32-wasi"
+      effect: "NoSchedule"

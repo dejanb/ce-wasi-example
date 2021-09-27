@@ -1,0 +1,13 @@
+[package]
+name = "ce-wasi-example"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+wasi-experimental-http = "0.6.0"
+bytes = "1.0.1"
+http = "0.2.4"
+#cloudevents-sdk = { version = "0.4.0", features = ["reqwest"] }
+cloudevents-sdk = { git = "https://github.com/dejanb/sdk-rust.git", branch = "feature/http-binding", features = ["http-binding"] }
