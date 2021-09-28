@@ -10,7 +10,7 @@ metadata:
 spec:
   automountServiceAccountToken: false
   containers:
-    - image: ghcr.io/dejanb/ce-wasi-example:v1.0.0
+    - image: ghcr.io/dejanb/ce-wasi-example:latest
       imagePullPolicy: Always
       name: ce-wasi-example
   tolerations:
