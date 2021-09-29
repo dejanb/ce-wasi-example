@@ -5,7 +5,7 @@ metadata:
   labels:
     app: ce-wasi-example
   annotations:
-    alpha.wasi.krustlet.dev/allowed-domains: '["https://postman-echo.com", "http://echoserver.echoserver"]'
+    alpha.wasi.krustlet.dev/allowed-domains: '["https://postman-echo.com"]'
     alpha.wasi.krustlet.dev/max-concurrent-requests: "42"
 spec:
   automountServiceAccountToken: false
@@ -13,6 +13,13 @@ spec:
     - image: ghcr.io/dejanb/ce-wasi-example:latest
       imagePullPolicy: Always
       name: ce-wasi-example
+      env:
+        - name: RUST_LOG
+          value: info
+        - name: RUST_BACKTRACE
+          value: "1"
+        - name: ECHO_SERVICE_URL
+          value: "https://postman-echo.com/post"
   tolerations:
     - key: "node.kubernetes.io/network-unavailable"
       operator: "Exists"

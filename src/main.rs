@@ -3,14 +3,15 @@ use bytes::Bytes;
 use http;
 use http::Request;
 use wasi_experimental_http::Response;
+use std::env;
 
 fn main() {
-    const POSTMAN_ECHO_POST_URL: &str = "https://postman-echo.com/post";
-    //const POSTMAN_ECHO_POST_URL: &str = "http://echoserver.echoserver";
+    env_logger::init();
+    let echo_service_url = env::var("ECHO_SERVICE_URL").unwrap();
 
     loop {
         let builder = http::request::Builder::new()
-            .uri(POSTMAN_ECHO_POST_URL)
+            .uri(echo_service_url.clone())
             .method(http::Method::POST);
 
         let input = EventBuilderV10::new()
@@ -23,17 +24,18 @@ fn main() {
         let request: Request<Option<Bytes>> =
             BinaryDeserializer::deserialize_binary(input, builder).unwrap();
 
-        println!("Request: {:?}", request);
+        log::info!("Request: {:?}", request);
 
         let mut response = wasi_experimental_http::request(request).expect("cannot make request");
         let response_body = response.body_read_all().unwrap();
         let response_text = std::str::from_utf8(&response_body).unwrap().to_string();
 
-        println!("{}", response.status_code);
-        println!("Response: {:?}", response_text);
+        log::info!("{}", response.status_code);
+        log::info!("Response: {:?}", response_text);
 
+        // If the echo server returns event in response, this can be used to parse it
         //let output = response_to_event(response);
-        //println!("Response: {:?}", output);
+        //log::info!("Response: {:?}", output);
 
         std::thread::sleep(std::time::Duration::new(15, 0));
     }
@@ -43,8 +45,6 @@ fn main() {
 /// Method to transform an incoming [`Response`] to [`Event`].
 pub fn response_to_event(mut res: Response) -> Result<Event> {
     let headers = res.headers_get_all().unwrap();
-    println!("headers {:?}", headers);
-
     let body = res.body_read_all().unwrap();
 
     to_event(&headers, body)
