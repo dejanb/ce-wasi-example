@@ -1,18 +1,15 @@
-use cloudevents::{message::*, EventBuilder, EventBuilderV10, binding::http::*};
+use cloudevents::{EventBuilder, EventBuilderV10, binding::http::*};
 use bytes::Bytes;
 use http;
 use http::Request;
 use std::env;
+use std::convert::TryFrom;
 
 fn main() {
     env_logger::init();
     let echo_service_url = env::var("ECHO_SERVICE_URL").unwrap();
 
     loop {
-        let builder = http::request::Builder::new()
-            .uri(echo_service_url.clone())
-            .method(http::Method::POST);
-
         let input = EventBuilderV10::new()
             .id("0001".to_string())
             .source("http://localhost/".to_string())
@@ -22,8 +19,12 @@ fn main() {
 
         log::info!("Event: {}", input);
 
-        let request: Request<Option<Bytes>> =
-            BinaryDeserializer::deserialize_binary(input, builder).unwrap();
+        let mut request: Request<Option<Bytes>> = Request::try_from(input).unwrap();
+        let (mut parts, body) = request.into_parts();
+        parts.uri = TryFrom::try_from(echo_service_url.clone()).unwrap();
+        parts.method = http::Method::POST;
+        request = Request::from_parts(parts, body);
+
 
         log::info!("Request: {:?}", request);
 

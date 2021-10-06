@@ -14,5 +14,5 @@ env_logger = "0.9.0"
 log = "0.4"
 
 #cloudevents-sdk = { version = "0.4.0", features = ["reqwest"] }
-cloudevents-sdk = { git = "https://github.com/dejanb/sdk-rust.git", branch = "feature/http-binding", features = ["http-binding"] }
+cloudevents-sdk = { git = "https://github.com/dejanb/sdk-rust.git", branch = "feature/http-binding-pr", features = ["http-binding"] }
 #cloudevents-sdk = { path = "../sdk-rust", features = ["http-binding"] }
